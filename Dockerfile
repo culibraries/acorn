@@ -4,6 +4,7 @@ RUN yum -y install git php56 mod24_ssl mysql-server php56-mysqlnd python python-
   easy_install-2.6 supervisor && \
   chkconfig httpd on ; chkconfig mysqld on && \
   echo "NETWORKING=yes" >/etc/sysconfig/network && \
+  find /var/lib/mysql -type f -exec touch {} \; && \
   service mysqld start && \
   mysqladmin -u root password 'docrootpw1'
 ADD application /acorn/application
@@ -23,7 +24,8 @@ ADD docker/index_update.php /acorn/index_update.php
 ADD docker/genssl.sh /acorn/genssl.sh
 ADD docker/acornhostssl.conf /etc/httpd/conf.d/vhost_acorn_ssl.conf
 WORKDIR /acorn
-RUN service mysqld start && \
+RUN find /var/lib/mysql -type f -exec touch {} \; && \
+    service mysqld start && \
     chmod a+rw application && \
     chmod a+x *.sh && \
     source ./dockerenv.sh ; \
